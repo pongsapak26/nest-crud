@@ -1,26 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProductsService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createProductDto: CreateProductDto) {
+    return this.prisma.product.create({
+      data: createProductDto,
+    });
   }
 
-  findAll() {
-    return `This action returns all products`;
+  async findAll() {
+    return this.prisma.product.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: number) {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+    });
+    if (!product) {
+      throw new NotFoundException('ไม่พบผลิตภัณฑ์ที่ต้องการ');
+    }
+    return product;
+  }
+  
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+    });
+    if (!product) {
+      throw new NotFoundException('ไม่พบผลิตภัณฑ์ที่ต้องการ');
+    }
+
+    return this.prisma.product.update({
+      where: { id },
+      data: updateProductDto,
+    });
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
+  async remove(id: number) {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+    });
+    if (!product) {
+      throw new NotFoundException('ไม่พบผลิตภัณฑ์ที่ต้องการ');
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+    await this.prisma.product.delete({
+      where: { id },
+    });
+
+    return { message: 'ลบผลิตภัณฑ์สำเร็จ' };
   }
 }
