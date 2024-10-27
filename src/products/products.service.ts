@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service'; // ใช้ .. เพื่อไปที่ระดับสูงขึ้น
+import { Product } from './product.interface';
 
 @Injectable()
 export class ProductsService {
@@ -13,10 +14,9 @@ export class ProductsService {
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<Product[]> {
     return this.prisma.product.findMany();
   }
-
   async findOne(id: number) {
     const product = await this.prisma.product.findUnique({
       where: { id },
@@ -26,7 +26,7 @@ export class ProductsService {
     }
     return product;
   }
-  
+
   async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await this.prisma.product.findUnique({
       where: { id },

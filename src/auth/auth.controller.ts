@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseGuards, Request, UnauthorizedException, Patc
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-import { JwtAuthGuard } from 'src/jwt/JwtAuthGuard';
+import { JwtAuthGuard } from '../jwt/JwtAuthGuard';
 
 @Controller('auth')
 export class AuthController {
